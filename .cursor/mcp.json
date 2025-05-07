@@ -1,0 +1,29 @@
+{
+    "mcpServers": {
+      "@magicuidesign/mcp": {
+        "command": "cmd",
+        "args": [
+          "/c", 
+          "npx",
+          "-y",
+          "@magicuidesign/mcp@latest"
+        ]
+      },
+      "browser-tools-mcp": {
+        "command": "cmd",
+        "args": [
+          "/c",
+          "npx",
+          "-y",
+          "@agentdeskai/browser-tools-mcp@latest"
+        ]
+      },
+      "firecrawl-mcp": {
+        "command": "npx",
+        "args": ["-y", "firecrawl-mcp"],
+        "env": {
+          "FIRECRAWL_API_KEY": "fc-186d98e4c3d0443fa4890c88df1d03eb"
+        }
+      }
+    }
+  } 

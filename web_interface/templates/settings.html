@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Car Finder AI{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">System Settings</h4>
+    </div>
+    <div class="card-body">
+        {% if get_flashed_messages() %}
+        <!-- Flash messages displayed by the base template -->
+        {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle-fill"></i> 
+            Adjust CRM integration, Google Credentials, and manage Environment Variables for the application.
+        </div>
+        {% endif %}
+
+        <!-- Link to Environment Variables Settings -->
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Application Environment Configuration</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Manage core application settings stored in the <code>.env</code> file, such as API keys, scraper behavior, and logging levels. 
+                    Changes here can significantly affect how the application runs.
+                </p>
+                <a href="{{ url_for('env_settings') }}" class="btn btn-primary">
+                    <i class="bi bi-sliders"></i> Manage Environment Variables
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Notification Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tr>
+                                <th>Client Email:</th>
+                                <td>{{ settings.client_email }}</td>
+                            </tr>
+                            <tr>
+                                <th>Client Phone:</th>
+                                <td>{{ settings.client_phone }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Scraping Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tr>
+                                <th>Frequency:</th>
+                                <td>{{ settings.scrape_frequency }}</td>
+                            </tr>
+                            <tr>
+                                <th>Last Run:</th>
+                                <td>{{ settings.last_run }}</td>
+                            </tr>
+                            <tr>
+                                <th>Minimum Vehicle Year:</th>
+                                <td>2018</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CRM Integration Toggle Section -->
+        <div class="card mb-3">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">CRM Integration Settings</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('update_settings_route') }}" method="POST">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch" id="enable_thryv_crm" name="enable_thryv_crm" {% if settings.enable_thryv_crm %}checked{% endif %}>
+                        <label class="form-check-label" for="enable_thryv_crm">Enable Thryv CRM Integration</label>
+                    </div>
+                    <p class="text-muted small">
+                        When disabled, the system will skip sending leads to Thryv CRM, but will still scrape listings and store them in Google Sheets.
+                        You can manually handle leads through the <a href="{{ url_for('leads') }}">Leads Dashboard</a>.
+                    </p>
+                    <button type="submit" class="btn btn-primary">Save CRM Settings</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Google Credentials Section -->
+        <div class="card mb-3">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Google Sheets Integration</h5>
+            </div>
+            <div class="card-body">
+                <p>
+                    Connect your Google Account to allow the application to read and write to your Google Sheet.
+                </p>
+                {% if not settings.client_secret_exists %}
+                <div class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <strong>Configuration Error:</strong> <code>client_secret.json</code> not found in the project root.
+                    Please add this file to enable Google Sheets integration.
+                    It should be obtained from the Google Cloud Console for your OAuth 2.0 Client ID.
+                </div>
+                {% endif %}
+
+                {% if settings.google_oauth_connected %}
+                <div class="alert alert-success d-flex align-items-center" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <div>
+                        Successfully connected to Google. Leads will be synced with Google Sheet ID: <strong>{{ settings.google_sheet_id if settings.google_sheet_id else "Not Set (check .env)" }}</strong>.
+                    </div>
+                </div>
+                <a href="{{ url_for('disconnect_google') }}" class="btn btn-danger">
+                    <i class="bi bi-google"></i> Disconnect from Google
+                </a>
+                {% else %}
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div>
+                        Not connected to Google. Please connect to enable Google Sheets integration.
+                    </div>
+                </div>
+                {% if settings.client_secret_exists %}
+                <a href="{{ url_for('authorize_google') }}" class="btn btn-primary">
+                    <i class="bi bi-google"></i> Connect to Google
+                </a>
+                {% else %}
+                <button class="btn btn-primary" disabled>
+                    <i class="bi bi-google"></i> Connect to Google (Requires <code>client_secret.json</code>)
+                </button>
+                {% endif %}
+                {% endif %}
+                <hr>
+                <p class="text-muted small">
+                    The application uses OAuth 2.0 to securely access your Google Sheets.
+                    You will be redirected to Google to grant permission.
+                    The <code>client_secret.json</code> file (for OAuth 2.0 client) must be present in the project's root directory.
+                    The specific <code>GOOGLE_SHEET_ID</code> to be used is configured in your <code>.env</code> file.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">API Integrations</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Twilio SMS</td>
+                                <td>
+                                    {% if settings.get('twilio_configured', True) %}
+                                    <span class="badge bg-success">Connected</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Not Connected</span>
+                                    {% endif %}
+                                </td>
+                                <td>Used for sending SMS to sellers and client notifications</td>
+                            </tr>
+                            <tr>
+                                <td>Google Sheets</td>
+                                <td>
+                                    {% if settings.google_oauth_connected %}
+                                    <span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> Connected</span>
+                                    {% else %}
+                                    <span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill"></i> Not Connected</span>
+                                    {% endif %}
+                                </td>
+                                <td>Used for storing lead data. Connection status relies on OAuth.</td>
+                            </tr>
+                            <tr>
+                                <td>Thryv CRM</td>
+                                <td>
+                                    {% if settings.enable_thryv_crm %}
+                                    <span class="badge bg-success">Enabled</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Disabled</span>
+                                    {% endif %}
+                                </td>
+                                <td>Used for creating leads in client's CRM</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+{% endblock %} 

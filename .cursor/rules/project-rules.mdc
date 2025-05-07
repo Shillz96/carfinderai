@@ -1,0 +1,130 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+{
+  "rules": [
+    {
+      "name": "File Organization",
+      "description": "Keep files under 200 lines where possible and organize by module type",
+      "globs": ["**/*.py"],
+      "pattern": "^.{1,200}$",
+      "messageIfViolated": "Consider splitting this file if it exceeds 200 lines.",
+      "severity": "warning"
+    },
+    {
+      "name": "Required Comments",
+      "description": "All functions must have docstrings",
+      "globs": ["**/*.py"],
+      "pattern": "def [A-Za-z0-9_]+\\(.*\\):\\s*(\"\"\"|''')",
+      "messageIfViolated": "Add docstring to functions using \"\"\" format with Args and Returns sections.",
+      "severity": "error"
+    },
+    {
+      "name": "Config Security",
+      "description": "No hardcoded credentials in source code",
+      "globs": ["**/*.py"],
+      "pattern": "(?<!from dotenv import load_dotenv)('|\")(password|token|key|secret|sid|auth_token|account_sid)\\1\\s*[:=]",
+      "messageIfViolated": "Don't hardcode credentials. Use environment variables from .env file instead.",
+      "severity": "error" 
+    },
+    {
+      "name": "Error Handling",
+      "description": "Catch expected exceptions and log them properly",
+      "globs": ["**/*.py"],
+      "pattern": "try:.+?except\\s+Exception\\s+as\\s+e:.+?(logger|logging)\\.(error|warning|exception)\\(",
+      "messageIfViolated": "Use proper error handling with appropriate logging.",
+      "severity": "warning"
+    },
+    {
+      "name": "Package Init Files",
+      "description": "Ensure all directories contain __init__.py",
+      "globs": ["**/"],
+      "requiredFilePatterns": ["__init__.py"],
+      "messageIfViolated": "Add __init__.py to make this directory a proper package.",
+      "severity": "warning"
+    },
+    {
+      "name": "Import Consistency",
+      "description": "Use consistent import order: standard, third-party, local",
+      "globs": ["**/*.py"],
+      "pattern": "import\\s+[A-Za-z0-9_]+|from\\s+[A-Za-z0-9_\\.]+\\s+import",
+      "messageIfViolated": "Order imports: standard lib, third-party, local modules.",
+      "severity": "warning"
+    },
+    {
+      "name": "Test Coverage",
+      "description": "Each functionality should have corresponding tests",
+      "globs": ["**/tests/test_*.py"],
+      "pattern": "class\\s+Test[A-Za-z0-9_]+\\(.*\\):.+?def\\s+test_[a-z0-9_]+\\(",
+      "messageIfViolated": "Write unit tests for all functionality using clear test_* method names.",
+      "severity": "warning"
+    },
+    {
+      "name": "Config Validation",
+      "description": "All configs must be validated at load time",
+      "globs": ["**/config.py", "**/settings.py"],
+      "pattern": "(missing_keys|validation|validate|required)",
+      "messageIfViolated": "Validate configuration values before using them.",
+      "severity": "warning"
+    },
+    {
+      "name": "Logging Standards",
+      "description": "Use consistent logging format",
+      "globs": ["**/*.py"],
+      "pattern": "logger\\.(debug|info|warning|error|critical)\\(.+?\\)",
+      "messageIfViolated": "Use logger.(level) with clear descriptive messages.",
+      "severity": "info"
+    },
+    {
+      "name": "Function Size",
+      "description": "Keep functions focused and under 50 lines",
+      "globs": ["**/*.py"],
+      "pattern": "def [A-Za-z0-9_]+\\(.*\\):[\\s\\S]{1,50}?(?=def|$)",
+      "messageIfViolated": "Functions should be focused and ideally under 50 lines.",
+      "severity": "warning"
+    },
+    {
+      "name": "HTML Selector Robustness",
+      "description": "Use multiple selectors for HTML parsing",
+      "globs": ["**/scrapers/*.py"],
+      "pattern": "\\.select(_one)?\\(['\"](mdc:w|[.-])+['\"]\\)",
+      "messageIfViolated": "Use multiple robust selectors in case of website structure changes.",
+      "severity": "warning"
+    },
+    {
+      "name": "Scraper Politeness",
+      "description": "Include delays between requests",
+      "globs": ["**/scrapers/*.py"],
+      "pattern": "(time\\.sleep|random\\.uniform).+(delay|wait)",
+      "messageIfViolated": "Add random delays between requests to be polite to target websites.",
+      "severity": "error"
+    },
+    {
+      "name": "API Key Management",
+      "description": "Load API keys from environment variables",
+      "globs": ["**/*.py"],
+      "pattern": "(os\\.getenv|config\\[)|from dotenv import",
+      "messageIfViolated": "Load sensitive credentials from environment variables.",
+      "severity": "error"
+    },
+    {
+      "name": "Code Modularity",
+      "description": "Keep classes focused on single responsibility",
+      "globs": ["**/*.py"],
+      "pattern": "class [A-Za-z0-9_]+\\(.*\\):",
+      "messageIfViolated": "Follow single responsibility principle for classes.",
+      "severity": "info"
+    },
+    {
+      "name": "HTML Parsing Safety",
+      "description": "Use defensive HTML parsing",
+      "globs": ["**/scrapers/*.py"],
+      "pattern": "if\\s+.+?element:|.+?element\\s+and\\s+.+?element\\.get",
+      "messageIfViolated": "Use defensive HTML parsing with proper checks before accessing elements.",
+      "severity": "warning"
+    }
+  ]
+
+}

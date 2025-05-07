@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Environment Settings - Car Finder AI{% endblock %}
+
+{% block additional_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+<style>
+    .form-control-sm-custom {
+        min-height: calc(1.5em + .5rem + 2px);
+        padding: .25rem .5rem;
+        font-size: .875rem;
+        border-radius: .2rem;
+    }
+    .form-text {
+        font-size: 0.8em;
+    }
+    .sensitive-info {
+        font-style: italic;
+        color: #6c757d; /* Bootstrap's muted text color */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0"><i class="bi bi-sliders"></i> Environment Variable Settings</h4>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle-fill"></i> 
+            Manage application configuration values stored in the <code>.env</code> file. 
+            Changes here directly modify the server's environment settings. Some changes may require an application restart to take full effect.
+        </div>
+
+        <form action="{{ url_for('env_settings') }}" method="POST">
+            {{ form_csrf_token() if form_csrf_token else '' }} {# Add CSRF token if Flask-WTF is used, common practice #}
+            {% for key, setting in settings.items() %}
+            <div class="mb-3 p-3 border rounded">
+                <label for="{{ key }}" class="form-label"><strong>{{ key }}</strong></label>
+                
+                {% if setting.type == 'select' %}
+                <select class="form-select form-control-sm-custom" id="{{ key }}" name="{{ key }}">
+                    {% for option in setting.options %}
+                    <option value="{{ option }}" {% if option == setting.current_value or (setting.sensitive and setting.actual_value_present and option == get_actual_value_for_select(key) ) %}selected{% endif %}>
+                        {{ option }}
+                    </option>
+                    {% endfor %}
+                    {% if setting.sensitive and not setting.actual_value_present and not setting.current_value %}
+                         {# For sensitive, empty select, allow an option to signify 'leave empty' if desired for consistency #}
+                         {# Or ensure the first option is a sensible default/placeholder #}
+                    {% endif %}
+                </select>
+                {% elif setting.type == 'bool' %}
+                <select class="form-select form-control-sm-custom" id="{{ key }}" name="{{ key }}">
+                    <option value="true" {% if setting.current_value|lower == 'true' %}selected{% endif %}>True</option>
+                    <option value="false" {% if setting.current_value|lower == 'false' %}selected{% endif %}>False</option>
+                </select>
+                {% else %} {# string, int, float - all use text input for now #}
+                <input type="{% if setting.type == 'int' or setting.type == 'float' %}number{% else %}text{% endif %}" 
+                       class="form-control form-control-sm-custom" 
+                       id="{{ key }}" 
+                       name="{{ key }}" 
+                       value="{{ setting.current_value if not setting.sensitive or not setting.actual_value_present else '********' }}"
+                       placeholder="{% if setting.sensitive %}{% if setting.actual_value_present %}Enter new value to change or leave as '********'{% else %}Enter value (sensitive){% endif %}{% else %}Enter value{% endif %}"
+                       {% if setting.type == 'float' %}step="any"{% endif %}>
+                {% endif %}
+                
+                <div id="{{ key }}Help" class="form-text mt-1">{{ setting.description }}</div>
+                {% if setting.sensitive %}
+                <div class="form-text mt-1 sensitive-info">
+                    <i class="bi bi-eye-slash-fill"></i> This field is sensitive. 
+                    {% if setting.actual_value_present %}
+                        Current value is masked. To keep the existing value, leave this field as '********'. To clear it, leave it blank.
+                    {% else %}
+                        No value is currently set. Enter a new value or leave blank.
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <hr>
+            <button type="submit" class="btn btn-success me-2">
+                <i class="bi bi-save"></i> Save All Settings
+            </button>
+            <a href="{{ url_for('settings') }}" class="btn btn-secondary">
+                <i class="bi bi-x-circle"></i> Cancel
+            </a>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="restartModal" tabindex="-1" aria-labelledby="restartModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="restartModalLabel">Application Restart May Be Required</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Some environment settings require an application restart to take full effect. If you have changed critical settings, please consider restarting the application.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Understood</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function() {
+            // Check if any critical values were changed to prompt restart modal
+            // This is a basic check, more sophisticated logic might be needed
+            // For now, just show it if any save happens.
+            var myModal = new bootstrap.Modal(document.getElementById('restartModal'), {
+                keyboard: false
+            });
+            // Only show modal if flash messages indicate success
+            // This is a bit tricky since flash messages are rendered after redirect.
+            // A more robust way would be to check specific settings or always show.
+            // For now, we'll rely on user seeing the info alert.
+            // If there's a success message (which will appear after redirect), this modal won't show here.
+            // The modal can be triggered from server-side if needed via a session flag.
+        });
+    }
+});
+</script>
+{% endblock %} 

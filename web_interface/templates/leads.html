@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Leads - Car Finder AI{% endblock %}
+
+{% block content %}
+{% if data_source_is_local %}
+<div class="alert alert-info alert-dismissible fade show" role="alert">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    <strong>Displaying Leads from Local Backup.</strong> Google Sheets is not currently connected or accessible.
+    Please go to <a href="{{ url_for('settings') }}" class="alert-link">Settings</a> to connect/reconnect your Google Account.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+
+<div class="mb-4">
+    <h4 class="mb-0">Vehicle Leads <span class="badge bg-secondary ms-2">{{ leads|length }} Total</span></h4>
+    <p class="text-muted">Browse scraped leads below. Click 'Details' for more information.</p>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for lead in leads %}
+    <div class="col">
+        <div class="card h-100 lead-card shadow-sm">
+            {% if lead.get('Image URL') %}
+            <img src="{{ lead.get('Image URL') }}" class="card-img-top lead-card-img" alt="{{ lead.get('Vehicle Year', '') }} {{ lead.get('Vehicle Make', '') }} {{ lead.get('Vehicle Model', '') }}">
+            {% else %}
+            <div class="card-img-top lead-card-img no-image-card d-flex align-items-center justify-content-center bg-light">
+                <span class="text-muted">No Image</span>
+            </div>
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title mb-1">{{ lead.get('Vehicle Year', '') }} {{ lead.get('Vehicle Make', '') }} {{ lead.get('Vehicle Model', '') }}</h5>
+                <p class="card-text lead-price mb-2"><strong>{{ lead.get('Vehicle Price', 'N/A') }}</strong></p>
+                
+                <div class="d-flex justify-content-between text-muted small mb-2">
+                    <span><i class="bi bi-calendar-event me-1"></i> {{ lead.get('Date Scraped', 'N/A').split(' ')[0] }}</span>
+                    <span><i class="bi bi-geo-alt me-1"></i> {{ lead.get('Location', 'N/A') }}</span>
+                    <span><i class="bi bi-tags me-1"></i> {{ lead.get('Source', 'N/A') }}</span>
+                </div>
+
+                <div class="mt-auto pt-2">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge {% if lead.get('Initial Seller SMS Sent') == 'Yes' %}bg-success{% else %}bg-secondary{% endif %}">SMS Sent: {{ lead.get('Initial Seller SMS Sent', 'No') }}</span>
+                        <span class="badge {% if lead.get('Thryv Status') == 'Sent to Thryv' %}bg-info{% elif lead.get('Thryv Status') == 'Error' %}bg-danger{% else %}bg-warning text-dark{% endif %}">Thryv: {{ lead.get('Thryv Status', 'N/A') }}</span>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ lead.get('Listing URL', '#') }}" target="_blank" class="btn btn-sm btn-outline-primary" title="View Original Listing">
+                            <i class="bi bi-link-45deg"></i> Listing
+                        </a>
+                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#leadDetailsModal{{ loop.index }}">
+                            <i class="bi bi-info-circle"></i> Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for showing lead details (remains mostly the same) -->
+    <div class="modal fade" id="leadDetailsModal{{ loop.index }}" tabindex="-1" aria-labelledby="leadDetailsModalLabel{{ loop.index }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="leadDetailsModalLabel{{ loop.index }}">
+                        {{ lead.get('Vehicle Year', '') }} {{ lead.get('Vehicle Make', '') }} {{ lead.get('Vehicle Model', '') }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% if lead.get('Image URL') %}
+                    <div class="car-image-container mb-4 text-center">
+                        <img src="{{ lead.get('Image URL') }}" alt="{{ lead.get('Vehicle Year', '') }} {{ lead.get('Vehicle Make', '') }} {{ lead.get('Vehicle Model', '') }}" class="car-image img-fluid rounded shadow-sm">
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-car-front-fill me-1"></i> Vehicle Information</h6>
+                            <table class="table table-sm table-borderless">
+                                <tr><th>Year:</th><td>{{ lead.get('Vehicle Year', 'N/A') }}</td></tr>
+                                <tr><th>Make:</th><td>{{ lead.get('Vehicle Make', 'N/A') }}</td></tr>
+                                <tr><th>Model:</th><td>{{ lead.get('Vehicle Model', 'N/A') }}</td></tr>
+                                <tr><th>Price:</th><td>{{ lead.get('Vehicle Price', 'N/A') }}</td></tr>
+                                <tr><th>Location:</th><td>{{ lead.get('Location', 'N/A') }}</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-person-lines-fill me-1"></i> Seller & Lead Info</h6>
+                            <table class="table table-sm table-borderless">
+                                <tr><th>Phone:</th><td>{{ lead.get('Seller Phone', 'N/A') }}</td></tr>
+                                <tr><th>Email:</th><td>{{ lead.get('Seller Email', 'N/A') }}</td></tr>
+                                <tr><th>SMS Status:</th><td>{{ lead.get('Seller SMS Status', 'N/A') }}</td></tr>
+                                <tr><th>Date Posted:</th><td>{{ lead.get('Date Posted', 'N/A') }}</td></tr>
+                                <tr><th>Date Scraped:</th><td>{{ lead.get('Date Scraped', 'N/A') }}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <h6><i class="bi bi-text-paragraph me-1"></i> Description</h6>
+                    <div class="card bg-light border-0">
+                        <div class="card-body small">
+                            {{ lead.get('Listing Description', 'No description available.') }}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <div>
+                        <!-- Add management buttons -->
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#manageLeadCollapse{{ loop.index }}" aria-expanded="false">
+                            <i class="bi bi-gear-fill me-1"></i> Manage Lead
+                        </button>
+                        <a href="{{ lead.get('Listing URL', '#') }}" target="_blank" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-up-right me-1"></i> View Original Listing
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Manual Lead Management Collapse -->
+                <div class="collapse" id="manageLeadCollapse{{ loop.index }}">
+                    <div class="card card-body border-top">
+                        <h6 class="mb-3">Manual Lead Management</h6>
+                        
+                        <form action="{{ url_for('manage_lead', lead_id=loop.index) }}" method="POST">
+                            <div class="mb-3">
+                                <label for="leadStatus{{ loop.index }}" class="form-label">Lead Status</label>
+                                <select class="form-select" id="leadStatus{{ loop.index }}" name="lead_status">
+                                    <option value="New" {% if lead.get('Status') == 'New' %}selected{% endif %}>New</option>
+                                    <option value="Contacted" {% if lead.get('Status') == 'Contacted' %}selected{% endif %}>Contacted</option>
+                                    <option value="Negotiating" {% if lead.get('Status') == 'Negotiating' %}selected{% endif %}>Negotiating</option>
+                                    <option value="Won" {% if lead.get('Status') == 'Won' %}selected{% endif %}>Won</option>
+                                    <option value="Lost" {% if lead.get('Status') == 'Lost' %}selected{% endif %}>Lost</option>
+                                    <option value="Inactive" {% if lead.get('Status') == 'Inactive' %}selected{% endif %}>Inactive</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="leadNotes{{ loop.index }}" class="form-label">Notes</label>
+                                <textarea class="form-control" id="leadNotes{{ loop.index }}" name="lead_notes" rows="3">{{ lead.get('Notes', '') }}</textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-save me-1"></i> Save Changes
+                            </button>
+                            <div class="form-text mt-2">
+                                These changes are saved locally and will not be sent to Thryv CRM if it's disabled.
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block additional_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block scripts %}
+{# DataTables initialization removed as we are no longer using a table #}
+{% endblock %} 

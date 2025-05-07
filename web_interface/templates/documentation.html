@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation - Car Finder AI{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Documentation</h4>
+    </div>
+    <div class="card-body">
+        <p class="lead">Welcome to the Car Finder AI documentation. This section provides resources to help you understand and use the system effectively.</p>
+        
+        <div class="row mt-4">
+            {% for doc in docs %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">{{ doc.title }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ doc.description }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{{ doc.path }}" target="_blank" class="btn btn-primary">
+                            <i class="bi bi-file-earmark-text"></i> View Document
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Quick Reference</h5>
+            </div>
+            <div class="card-body">
+                <h6>Common Terms</h6>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Term</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Lead</td>
+                                <td>A potential vehicle listing from Craigslist or Facebook Marketplace.</td>
+                            </tr>
+                            <tr>
+                                <td>Initial Seller SMS</td>
+                                <td>The first message sent to a seller: "Hi, I saw your listing for the [Year] [Make] [Model]. Is it still available?"</td>
+                            </tr>
+                            <tr>
+                                <td>Client Notification</td>
+                                <td>Email and SMS sent to you (the client) when a new lead is found.</td>
+                            </tr>
+                            <tr>
+                                <td>Thryv Integration</td>
+                                <td>Process of creating leads in your Thryv CRM system.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h6 class="mt-4">Status Indicators</h6>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Meaning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-success">Yes</span></td>
+                                <td>Action was successfully completed.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-danger">No</span></td>
+                                <td>Action was not completed (may indicate an error or missing data).</td>
+                            </tr>
+                            <tr>
+                                <td>Sent to Thryv</td>
+                                <td>Lead was successfully created in Thryv CRM.</td>
+                            </tr>
+                            <tr>
+                                <td>Pending</td>
+                                <td>Action is scheduled but not yet completed.</td>
+                            </tr>
+                            <tr>
+                                <td>Error</td>
+                                <td>There was a problem completing the action.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Support</h5>
+            </div>
+            <div class="card-body">
+                <p>If you encounter any issues or have questions about the system, please contact:</p>
+                <ul>
+                    <li><strong>Technical Support:</strong> support@carfinderai.com</li>
+                    <li><strong>Phone:</strong> (808) 555-1234</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+{% endblock %} 
