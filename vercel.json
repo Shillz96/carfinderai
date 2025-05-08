@@ -13,7 +13,7 @@
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "/web_interface/static/$1"
+      "dest": "web_interface/static/$1"
     },
     {
       "src": "/(.*)",
