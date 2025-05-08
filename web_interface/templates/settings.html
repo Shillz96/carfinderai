@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="card">
-    <div class="card-header bg-primary text-white">
+    <div class="card-header">
         <h4 class="mb-0">System Settings</h4>
     </div>
     <div class="card-body">
@@ -19,7 +19,7 @@
 
         <!-- Link to Environment Variables Settings -->
         <div class="card mb-3 shadow-sm">
-            <div class="card-header bg-light">
+            <div class="card-header">
                 <h5 class="mb-0">Application Environment Configuration</h5>
             </div>
             <div class="card-body">
@@ -36,7 +36,7 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="card mb-3">
-                    <div class="card-header bg-light">
+                    <div class="card-header">
                         <h5 class="mb-0">Notification Settings</h5>
                     </div>
                     <div class="card-body">
@@ -56,7 +56,7 @@
             
             <div class="col-md-6">
                 <div class="card mb-3">
-                    <div class="card-header bg-light">
+                    <div class="card-header">
                         <h5 class="mb-0">Scraping Settings</h5>
                     </div>
                     <div class="card-body">
@@ -81,7 +81,7 @@
 
         <!-- CRM Integration Toggle Section -->
         <div class="card mb-3">
-            <div class="card-header bg-light">
+            <div class="card-header">
                 <h5 class="mb-0">CRM Integration Settings</h5>
             </div>
             <div class="card-body">
@@ -90,7 +90,7 @@
                         <input class="form-check-input" type="checkbox" role="switch" id="enable_thryv_crm" name="enable_thryv_crm" {% if settings.enable_thryv_crm %}checked{% endif %}>
                         <label class="form-check-label" for="enable_thryv_crm">Enable Thryv CRM Integration</label>
                     </div>
-                    <p class="text-muted small">
+                    <p class="small">
                         When disabled, the system will skip sending leads to Thryv CRM, but will still scrape listings and store them in Google Sheets.
                         You can manually handle leads through the <a href="{{ url_for('leads') }}">Leads Dashboard</a>.
                     </p>
@@ -101,7 +101,7 @@
 
         <!-- Google Credentials Section -->
         <div class="card mb-3">
-            <div class="card-header bg-light">
+            <div class="card-header">
                 <h5 class="mb-0">Google Sheets Integration</h5>
             </div>
             <div class="card-body">
@@ -145,7 +145,7 @@
                 {% endif %}
                 {% endif %}
                 <hr>
-                <p class="text-muted small">
+                <p class="small">
                     The application uses OAuth 2.0 to securely access your Google Sheets.
                     You will be redirected to Google to grant permission.
                     The <code>client_secret.json</code> file (for OAuth 2.0 client) must be present in the project's root directory.
@@ -155,7 +155,7 @@
         </div>
         
         <div class="card">
-            <div class="card-header bg-light">
+            <div class="card-header">
                 <h5 class="mb-0">API Integrations</h5>
             </div>
             <div class="card-body">
