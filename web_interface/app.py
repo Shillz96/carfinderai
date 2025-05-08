@@ -78,7 +78,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 # Basic User Authentication (replace with a more robust system for production)
 users = {
-    os.environ.get('WEB_UI_USERNAME', 'admin'): generate_password_hash(os.environ.get('WEB_UI_PASSWORD', 'vercel123'))
+    os.environ.get('FLASK_SECRET_KEYWEB_UI_USERNAME', 'admin'): generate_password_hash(os.environ.get('WEB_UI_PASSWORD', 'vercel123'))
 }
 
 # Check if we're running on Vercel
