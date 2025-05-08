@@ -13,11 +13,11 @@
   "routes": [
     {
       "src": "/static/css/style.css",
-      "dest": "web_interface/static/css/style.css"
+      "dest": "static/css/style.css"
     },
     {
       "src": "/static/(.*)",
-      "dest": "web_interface/static/$1"
+      "dest": "static/$1"
     },
     {
       "src": "/(.*)",
