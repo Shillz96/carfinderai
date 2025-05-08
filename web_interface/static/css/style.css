@@ -1,37 +1,84 @@
 /* Custom CSS for Car Finder AI Web Interface */
 
+:root {
+    --base-neutral-soft-wood-grain: #F5E9E2; /* Light Beige/Taupe */
+    --secondary-neutral-warm-off-white: #FDF6F0; /* Warm Off-White */
+    --pastel-accent-1-muted-sage-green: #A8B5A2; /* Muted Sage Green */
+    --pastel-accent-2-blush-pink: #F4C7C3; /* Blush Pink */
+    --pastel-accent-3-soft-lavender: #D7D2E2; /* Soft Lavender */
+    --dark-accent-charcoal-brown: #4A4238; /* Charcoal Brown */
+    --subtle-wood-grain-texture: url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414zM41.828 15.572l-8.485 8.485-1.414-1.414 8.485-8.485 1.414 1.414zM15.572 41.828l8.485-8.485 1.414 1.414-8.485 8.485-1.414-1.414zM0 26h52v-2H0v2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); /* Example subtle wood grain */
+}
+
 /* Global styles */
 body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: #f8f9fa;
+    background-color: var(--secondary-neutral-warm-off-white); /* Warm Off-White for main background */
+    color: var(--dark-accent-charcoal-brown); /* Charcoal Brown for text */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A clean, modern font */
 }
 
 .container {
     flex: 1;
+    background-color: var(--secondary-neutral-warm-off-white); /* Ensure container also uses this bg */
 }
 
 /* Navbar styling */
-.navbar-brand {
+.navbar {
+    background-color: var(--base-neutral-soft-wood-grain); /* Light Beige/Taupe with subtle texture */
+    background-image: var(--subtle-wood-grain-texture);
+    border-bottom: 1px solid var(--pastel-accent-3-soft-lavender);
+}
+
+.navbar-brand, .navbar-nav .nav-link {
     font-weight: 700;
+    color: var(--dark-accent-charcoal-brown) !important;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--pastel-accent-2-blush-pink) !important;
 }
 
 /* Card customization */
 .card {
     border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); /* Softer shadow */
     margin-bottom: 1.5rem;
+    background-color: var(--secondary-neutral-warm-off-white);
+    border: 1px solid var(--pastel-accent-3-soft-lavender);
 }
 
 .card-header {
     border-radius: 0.5rem 0.5rem 0 0 !important;
+    background-color: var(--base-neutral-soft-wood-grain); /* Light beige header */
+    background-image: var(--subtle-wood-grain-texture);
+    color: var(--dark-accent-charcoal-brown);
+    border-bottom: 1px solid var(--pastel-accent-3-soft-lavender);
 }
 
 /* Table styling (kept for other potential tables) */
+.table {
+    background-color: var(--secondary-neutral-warm-off-white);
+    color: var(--dark-accent-charcoal-brown);
+}
+.table th {
+    background-color: var(--base-neutral-soft-wood-grain);
+    color: var(--dark-accent-charcoal-brown);
+}
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(168, 181, 162, 0.1); /* Very subtle sage green tint for stripes */
+}
+.table-hover tbody tr:hover {
+    background-color: var(--pastel-accent-3-soft-lavender) !important;
+    color: var(--dark-accent-charcoal-brown);
+}
+
 .table-responsive {
     border-radius: 0.25rem;
     overflow: hidden;
+    border: 1px solid var(--pastel-accent-3-soft-lavender);
 }
 
 /* --- LEAD CARD STYLES --- */
@@ -41,11 +88,11 @@ body {
 
 .lead-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 15px rgba(74, 66, 56, 0.15); /* Shadow with charcoal brown base */
 }
 
 .lead-card-img {
-    height: 180px; 
+    height: 180px;
     object-fit: cover;
     border-top-left-radius: 0.5rem;
     border-top-right-radius: 0.5rem;
@@ -54,21 +101,26 @@ body {
 .no-image-card {
     height: 180px;
     font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--base-neutral-soft-wood-grain);
+    color: var(--dark-accent-charcoal-brown);
 }
 
 .lead-price {
     font-size: 1.2rem;
-    color: #0d6efd; /* Bootstrap primary color */
+    color: var(--pastel-accent-1-muted-sage-green); /* Sage green for price */
+    font-weight: bold;
 }
-
-/* Car thumbnail styling (from previous version, removed as we use cards) */
-/* .car-thumbnail { ... } */
-/* .no-image { ... } */
 
 /* Car detail image styling */
 .car-image-container {
     text-align: center;
     margin-bottom: 1.5rem;
+    background-color: var(--base-neutral-soft-wood-grain);
+    padding: 1rem;
+    border-radius: 8px;
 }
 
 .car-image {
@@ -76,27 +128,118 @@ body {
     width: auto;
     object-fit: contain;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(74, 66, 56, 0.1); /* Shadow with charcoal brown base */
 }
 
 /* Badge customization */
 .badge {
     font-weight: 500;
-    padding: 0.35em 0.65em;
+    padding: 0.4em 0.7em; /* Slightly larger padding */
+    border-radius: 0.35rem;
 }
 
 /* DataTables customization (kept for other potential tables) */
+.dataTables_wrapper .dataTables_length label,
+.dataTables_wrapper .dataTables_filter label {
+    color: var(--dark-accent-charcoal-brown);
+}
+.dataTables_wrapper .form-control {
+    background-color: var(--secondary-neutral-warm-off-white);
+    border: 1px solid var(--pastel-accent-3-soft-lavender);
+    color: var(--dark-accent-charcoal-brown);
+}
 .dataTables_wrapper .dataTables_length,
 .dataTables_wrapper .dataTables_filter {
     margin-bottom: 1rem;
 }
 
 .dataTables_wrapper .dataTables_info,
-.dataTables_wrapper .dataTables_paginate {
+.dataTables_wrapper .dataTables_paginate .page-link {
     margin-top: 1rem;
+    color: var(--dark-accent-charcoal-brown) !important;
+}
+.dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
+    background-color: var(--pastel-accent-1-muted-sage-green);
+    border-color: var(--pastel-accent-1-muted-sage-green);
+    color: var(--secondary-neutral-warm-off-white) !important;
+}
+.dataTables_wrapper .dataTables_paginate .page-link:hover {
+    background-color: var(--pastel-accent-2-blush-pink);
+    border-color: var(--pastel-accent-2-blush-pink);
 }
 
 /* Button styling */
+.btn {
+    border-radius: 0.35rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.btn-primary {
+    background-color: var(--pastel-accent-1-muted-sage-green);
+    border-color: var(--pastel-accent-1-muted-sage-green);
+    color: var(--secondary-neutral-warm-off-white);
+}
+.btn-primary:hover {
+    background-color: #93a08e; /* Darker Sage */
+    border-color: #93a08e;
+    color: var(--secondary-neutral-warm-off-white);
+}
+.btn-secondary { /* For less prominent actions or alternatives */
+    background-color: var(--pastel-accent-3-soft-lavender);
+    border-color: var(--pastel-accent-3-soft-lavender);
+    color: var(--dark-accent-charcoal-brown);
+}
+.btn-secondary:hover {
+    background-color: #c8c3d3; /* Darker Lavender */
+    border-color: #c8c3d3;
+    color: var(--dark-accent-charcoal-brown);
+}
+.btn-success { /* Using Blush Pink as an accent "success" or CTA */
+    background-color: var(--pastel-accent-2-blush-pink);
+    border-color: var(--pastel-accent-2-blush-pink);
+    color: var(--dark-accent-charcoal-brown);
+}
+.btn-success:hover {
+    background-color: #ecaBAD; /* Darker Blush Pink */
+    border-color: #ecaBAD;
+    color: var(--dark-accent-charcoal-brown);
+}
+.btn-danger {
+    background-color: #D98880; /* A muted red that complements pastels */
+    border-color: #D98880;
+    color: var(--secondary-neutral-warm-off-white);
+}
+.btn-danger:hover {
+    background-color: #CD5C5C; /* Darker muted red */
+    border-color: #CD5C5C;
+}
+.btn-warning {
+    background-color: #F5B041; /* A muted orange/yellow */
+    border-color: #F5B041;
+    color: var(--dark-accent-charcoal-brown);
+}
+.btn-warning:hover {
+    background-color: #F39C12; /* Darker muted orange/yellow */
+}
+.btn-info { /* Re-purpose for a different pastel accent if needed */
+    background-color: var(--pastel-accent-3-soft-lavender);
+    border-color: var(--pastel-accent-3-soft-lavender);
+    color: var(--dark-accent-charcoal-brown);
+}
+.btn-info:hover {
+    background-color: #c8c3d3; /* Darker Lavender */
+}
+
+.btn-link {
+    color: var(--pastel-accent-1-muted-sage-green);
+    text-decoration: none;
+}
+.btn-link:hover {
+    color: var(--pastel-accent-2-blush-pink);
+    text-decoration: underline;
+}
+
 .btn-sm {
     padding: 0.25rem 0.5rem;
     font-size: 0.75rem;
@@ -105,17 +248,43 @@ body {
 /* Modal customization */
 .modal-content {
     border-radius: 0.5rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 15px rgba(74, 66, 56, 0.2); /* Shadow with charcoal brown base */
+    background-color: var(--secondary-neutral-warm-off-white);
+    border: 1px solid var(--pastel-accent-3-soft-lavender);
 }
 
 .modal-header {
     border-radius: 0.5rem 0.5rem 0 0;
+    background-color: var(--base-neutral-soft-wood-grain);
+    background-image: var(--subtle-wood-grain-texture);
+    color: var(--dark-accent-charcoal-brown);
+    border-bottom: 1px solid var(--pastel-accent-3-soft-lavender);
+}
+.modal-header .btn-close {
+    filter: invert(20%) sepia(10%) saturate(500%) hue-rotate(-10deg) brightness(80%) contrast(80%); /* Making close button visible on beige */
+}
+
+.modal-footer {
+    background-color: var(--base-neutral-soft-wood-grain);
+    background-image: var(--subtle-wood-grain-texture);
+    border-top: 1px solid var(--pastel-accent-3-soft-lavender);
 }
 
 /* Footer styling */
 .footer {
     margin-top: auto;
-    padding: 1.5rem 0;
+    padding: 2rem 0; /* More padding */
+    background-color: var(--pastel-accent-1-muted-sage-green); /* Sage green background */
+    color: var(--secondary-neutral-warm-off-white); /* Off-white text */
+    border-top: 2px solid var(--base-neutral-soft-wood-grain);
+}
+.footer a {
+    color: var(--pastel-accent-2-blush-pink); /* Blush pink for links */
+    text-decoration: none;
+}
+.footer a:hover {
+    color: var(--secondary-neutral-warm-off-white);
+    text-decoration: underline;
 }
 
 /* Responsive adjustments */
@@ -123,13 +292,17 @@ body {
     .card-body {
         padding: 1rem;
     }
-    
     .table th, .table td {
         padding: 0.5rem;
     }
-    
     .lead-card-img, .no-image-card {
         height: 150px;
+    }
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+    .footer {
+        padding: 1.5rem 0;
     }
 }
 
@@ -139,37 +312,146 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 80vh;
+    padding: 1rem;
+}
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--secondary-neutral-warm-off-white);
 }
 
 /* Documentation page */
 .doc-link {
     text-decoration: none;
-    color: inherit;
+    color: var(--dark-accent-charcoal-brown);
     transition: all 0.2s ease;
+    display: block;
+    padding: 1rem;
+    background-color: var(--secondary-neutral-warm-off-white);
+    border: 1px solid var(--pastel-accent-3-soft-lavender);
+    border-radius: 0.35rem;
+    margin-bottom: 1rem;
 }
 
 .doc-link:hover {
     transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(74, 66, 56, 0.1);
+    border-color: var(--pastel-accent-1-muted-sage-green);
+}
+.doc-link h5 {
+    color: var(--pastel-accent-1-muted-sage-green);
 }
 
-/* Status badges */
+/* Status badges (Bootstrap overrides) */
 .badge.bg-success {
-    background-color: #198754 !important;
+    background-color: var(--pastel-accent-1-muted-sage-green) !important;
+    color: var(--secondary-neutral-warm-off-white) !important;
 }
 
 .badge.bg-danger {
-    background-color: #dc3545 !important;
+    background-color: #D98880 !important; /* Muted red */
+    color: var(--secondary-neutral-warm-off-white) !important;
 }
 
 .badge.bg-warning {
-    background-color: #ffc107 !important;
-    color: #212529 !important;
+    background-color: #F5B041 !important; /* Muted orange/yellow */
+    color: var(--dark-accent-charcoal-brown) !important;
 }
 
 .badge.bg-info {
-    background-color: #0dcaf0 !important;
+    background-color: var(--pastel-accent-3-soft-lavender) !important;
+    color: var(--dark-accent-charcoal-brown) !important;
+}
+
+.badge.bg-primary {
+    background-color: var(--pastel-accent-1-muted-sage-green) !important;
+    color: var(--secondary-neutral-warm-off-white) !important;
 }
 
 .badge.bg-secondary {
-    background-color: #6c757d !important;
+    background-color: var(--base-neutral-soft-wood-grain) !important;
+    color: var(--dark-accent-charcoal-brown) !important;
+    border: 1px solid var(--pastel-accent-3-soft-lavender);
+}
+
+/* Utility for subtle wood grain texture on demand */
+.bg-wood-grain-subtle {
+    background-color: var(--base-neutral-soft-wood-grain);
+    background-image: var(--subtle-wood-grain-texture);
+}
+
+/* Ensure sufficient contrast for text on pastel backgrounds where needed */
+.text-on-blush-pink {
+    color: var(--dark-accent-charcoal-brown);
+}
+.text-on-sage-green {
+    color: var(--secondary-neutral-warm-off-white);
+}
+.text-on-lavender {
+    color: var(--dark-accent-charcoal-brown);
+}
+
+/* Form styling */
+.form-control {
+    background-color: var(--secondary-neutral-warm-off-white);
+    border: 1px solid var(--pastel-accent-3-soft-lavender);
+    color: var(--dark-accent-charcoal-brown);
+    border-radius: 0.35rem;
+}
+.form-control:focus {
+    background-color: var(--secondary-neutral-warm-off-white);
+    border-color: var(--pastel-accent-1-muted-sage-green);
+    box-shadow: 0 0 0 0.25rem rgba(168, 181, 162, 0.25); /* Sage green focus ring */
+    color: var(--dark-accent-charcoal-brown);
+}
+.form-label {
+    color: var(--dark-accent-charcoal-brown);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+.form-select {
+    background-color: var(--secondary-neutral-warm-off-white);
+    border: 1px solid var(--pastel-accent-3-soft-lavender);
+    color: var(--dark-accent-charcoal-brown);
+    border-radius: 0.35rem;
+}
+.form-select:focus {
+    border-color: var(--pastel-accent-1-muted-sage-green);
+    box-shadow: 0 0 0 0.25rem rgba(168, 181, 162, 0.25);
+}
+
+/* Alerts */
+.alert {
+    border-radius: 0.35rem;
+    padding: 1rem;
+}
+.alert-primary { /* Using Sage */
+    color: var(--dark-accent-charcoal-brown);
+    background-color: #dde2db; /* Lighter Sage */
+    border-color: var(--pastel-accent-1-muted-sage-green);
+}
+.alert-secondary { /* Using Lavender */
+    color: var(--dark-accent-charcoal-brown);
+    background-color: #e9e7ed; /* Lighter Lavender */
+    border-color: var(--pastel-accent-3-soft-lavender);
+}
+.alert-success { /* Using Blush Pink */
+    color: var(--dark-accent-charcoal-brown);
+    background-color: #fbe4e2; /* Lighter Blush Pink */
+    border-color: var(--pastel-accent-2-blush-pink);
+}
+.alert-danger {
+    color: var(--secondary-neutral-warm-off-white);
+    background-color: #ebcccc; /* Lighter Muted Red */
+    border-color: #D98880;
+}
+.alert-warning {
+    color: var(--dark-accent-charcoal-brown);
+    background-color: #fcf3cf; /* Lighter Muted Yellow/Orange */
+    border-color: #F5B041;
+}
+.alert-info {  /* Using Lavender again, consistent with btn-info */
+    color: var(--dark-accent-charcoal-brown);
+    background-color: #e9e7ed; /* Lighter Lavender */
+    border-color: var(--pastel-accent-3-soft-lavender);
 } 
