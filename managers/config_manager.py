@@ -4,30 +4,30 @@ from dotenv import load_dotenv, find_dotenv, get_key, set_key
 
 # Define the path to the .env file
 # This assumes config_manager.py is in a 'managers' subdirectory of the project root.
+DOTENV_PATH = None
 try:
     PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    DOTENV_PATH = find_dotenv(filename='.env', usecwd=False, raise_error_if_not_found=False)
+    # Attempt to find .env in the project root or current working directory.
+    # Do not raise an error if not found, and do not create it.
+    found_dotenv_path = find_dotenv(filename='.env', usecwd=True, raise_error_if_not_found=False)
 
-    if not DOTENV_PATH or not os.path.exists(DOTENV_PATH):
-        # If .env doesn't exist in the project root, create it.
-        if not DOTENV_PATH: # find_dotenv might return empty if it only found it in a parent dir not project root
-            DOTENV_PATH = os.path.join(PROJECT_ROOT, '.env')
-        
-        with open(DOTENV_PATH, 'w') as f:
-            f.write("# Auto-generated .env file\\n")
-        print(f"Created .env file at: {DOTENV_PATH}") # For debugging
-    
-    load_dotenv(DOTENV_PATH, override=True) # Load existing .env file, and override process env vars
-    print(f"Loaded .env file from: {DOTENV_PATH}") # For debugging
+    if found_dotenv_path and os.path.exists(found_dotenv_path):
+        DOTENV_PATH = found_dotenv_path
+        load_dotenv(DOTENV_PATH, override=True) # Load existing .env file
+        print(f"Loaded .env file from: {DOTENV_PATH}") # For debugging
+    else:
+        # If .env is not found, DOTENV_PATH remains None.
+        # The application will rely on environment variables set externally (e.g., by Vercel).
+        print(".env file not found. Relying on system-set environment variables.")
+        # Attempt to load from process environment anyway, in case they are already set
+        load_dotenv(override=True)
+
 
 except Exception as e:
-    # Fallback if path resolution fails (e.g., in some execution contexts)
-    print(f"Error finding or creating .env file: {e}. Attempting fallback.")
-    DOTENV_PATH = os.path.join(os.getcwd(), '.env') # Fallback to current working directory
-    if not os.path.exists(DOTENV_PATH):
-        with open(DOTENV_PATH, 'w') as f:
-            f.write("# Auto-generated .env file (fallback location)\\n")
-    load_dotenv(DOTENV_PATH, override=True)
+    # Fallback if path resolution or loading fails (e.g., in some execution contexts)
+    print(f"Error during .env file processing: {e}. Relying on system-set environment variables.")
+    # Attempt to load from process environment as a last resort
+    load_dotenv(override=True)
 
 
 # Define configurations that can be managed via UI
@@ -259,22 +259,29 @@ def update_multiple_config_values(settings_to_update: Dict[str, str]) -> Dict[st
 def ensure_init_py_exists():
     """
     Ensures that __init__.py exists in the managers directory, making it a package.
-    This is a utility function and might be better placed in a setup script,
-    but can be called once if needed.
+    This is a utility function and might be better placed in a setup script.
+    On read-only filesystems, this will log an error if it needs to create the file.
     """
     managers_dir = os.path.dirname(os.path.abspath(__file__))
     init_py_path = os.path.join(managers_dir, "__init__.py")
     if not os.path.exists(init_py_path):
         try:
+            # In a read-only environment, this write will fail.
+            # This function should ideally not be called at import time in such environments
+            # or should be designed to be a no-op if writing is not possible.
             with open(init_py_path, 'w') as f:
-                f.write("# Initializes the managers package\\n")
+                f.write("# Initializes the managers package\n")
             print(f"Created {init_py_path}")
         except IOError as e:
-            print(f"Could not create {init_py_path}: {e}")
+            print(f"Could not create {init_py_path} (expected in read-only environments): {e}")
 
 # Call it once to ensure the __init__.py exists for the 'managers' package
 if __name__ != "__main__": # Avoid running on direct script execution if any
-    ensure_init_py_exists()
+    # Consider removing this call if it causes issues in Vercel due to attempting file write,
+    # or ensure your deployment package includes this __init__.py.
+    # For Vercel, it's best if all necessary files, including __init__.py, are part of the deployment.
+    # ensure_init_py_exists() # Commenting out for Vercel to prevent write attempts
+    pass # __init__.py should be part of the codebase
 
 # Example usage (for testing this module directly):
 if __name__ == "__main__":
@@ -283,13 +290,13 @@ if __name__ == "__main__":
     for k, v in settings.items():
         print(f"- {k}: Current Value='{v['current_value']}' (Type: {v['type']}, Sensitive: {v['sensitive']}, Options: {v.get('options', 'N/A')}) Desc: {v['description']}")
 
-    print("\\nTesting update (example - MIN_VEHICLE_YEAR to 2020):")
+    print("\nTesting update (example - MIN_VEHICLE_YEAR to 2020):")
     # Ensure MIN_VEHICLE_YEAR is in CONFIGURABLE_SETTINGS for this test to run
     if 'MIN_VEHICLE_YEAR' in CONFIGURABLE_SETTINGS:
         update_results = update_multiple_config_values({'MIN_VEHICLE_YEAR': '2020', 'LOG_LEVEL': 'DEBUG', 'MADE_UP_KEY': 'test'})
         print("Update Results:", update_results)
         
-        print("\\nFetching MIN_VEHICLE_YEAR and LOG_LEVEL again:")
+        print("\nFetching MIN_VEHICLE_YEAR and LOG_LEVEL again:")
         print(f"MIN_VEHICLE_YEAR: {get_config_value('MIN_VEHICLE_YEAR')}")
         print(f"LOG_LEVEL: {get_config_value('LOG_LEVEL')}")
     else:
@@ -304,7 +311,7 @@ if __name__ == "__main__":
         }
         print("Added TEST_SENSITIVE_KEY to CONFIGURABLE_SETTINGS for this test run.")
 
-    print("\\nTesting update for TEST_SENSITIVE_KEY:")
+    print("\nTesting update for TEST_SENSITIVE_KEY:")
     update_results_sensitive = update_multiple_config_values({'TEST_SENSITIVE_KEY': 'mysecretvalue'})
     print("Sensitive Update Results:", update_results_sensitive)
     print(f"TEST_SENSITIVE_KEY (from get_config_value): {get_config_value('TEST_SENSITIVE_KEY')}")
@@ -312,13 +319,13 @@ if __name__ == "__main__":
     settings_after_sensitive_update = get_all_configurable_settings_with_values()
     print(f"TEST_SENSITIVE_KEY (displayed): {settings_after_sensitive_update.get('TEST_SENSITIVE_KEY', {}).get('current_value')}")
 
-    print("\\nTesting 'no change' for TEST_SENSITIVE_KEY by passing '********':")
+    print("\nTesting 'no change' for TEST_SENSITIVE_KEY by passing '********':")
     update_results_nochange = update_multiple_config_values({'TEST_SENSITIVE_KEY': '********'})
     print("No Change Sensitive Update Results:", update_results_nochange)
     print(f"TEST_SENSITIVE_KEY (should be 'mysecretvalue'): {get_config_value('TEST_SENSITIVE_KEY')}")
 
 
-    print("\\nTesting clearing TEST_SENSITIVE_KEY by passing empty string:")
+    print("\nTesting clearing TEST_SENSITIVE_KEY by passing empty string:")
     update_results_clear = update_multiple_config_values({'TEST_SENSITIVE_KEY': ''})
     print("Clear Sensitive Update Results:", update_results_clear)
     print(f"TEST_SENSITIVE_KEY (should be None or empty): {get_config_value('TEST_SENSITIVE_KEY')}")
