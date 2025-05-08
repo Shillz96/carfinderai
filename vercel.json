@@ -11,13 +11,8 @@
     }
   ],
   "routes": [
-    // Specific style.css route REMOVED for testing
-    // {
-    //   "src": "/static/css/style.css",
-    //   "dest": "/web_interface/static/css/style.css"
-    // }, 
     {
-      "src": "/static/(.*)", // This should now catch /static/css/style.css
+      "src": "/static/(.*)",
       "dest": "/web_interface/static/$1"
     },
     {
