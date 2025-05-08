@@ -26,46 +26,44 @@ GOOGLE_CREDS_JSON_ENV_VAR = "GOOGLE_APPLICATION_CREDENTIALS_JSON"
 
 DEFAULT_SETTINGS = {
     "enable_thryv_crm": True,
-    # "google_credentials_configured": False # Removed
 }
 
 def get_ui_settings():
     """
-    Loads UI settings from ui_settings.json.
-    If the file doesn't exist or is invalid, creates it with default settings.
+    Loads UI settings from ui_settings.json if it exists.
+    If the file doesn't exist or is invalid, returns default settings.
+    This function is read-only for Vercel compatibility.
 
     Returns:
         dict: A dictionary containing UI settings.
     """
-    if not os.path.exists(SETTINGS_FILE):
-        with open(SETTINGS_FILE, 'w') as f:
-            json.dump(DEFAULT_SETTINGS, f, indent=2)
-        logger.info(f"Created default UI settings file: {SETTINGS_FILE}")
-        return DEFAULT_SETTINGS.copy()
-    try:
-        with open(SETTINGS_FILE, 'r') as f:
-            settings = json.load(f)
-            updated = False
-            for key, value in DEFAULT_SETTINGS.items():
-                if key not in settings:
-                    settings[key] = value
-                    updated = True
-            # Remove obsolete keys
-            if "google_credentials_configured" in settings:
-                del settings["google_credentials_configured"]
-                updated = True
+    settings = DEFAULT_SETTINGS.copy() # Start with defaults
 
-            if updated:
-                save_ui_settings(settings) # Save if changes were made (new defaults or removed keys)
-            return settings
-    except json.JSONDecodeError as e:
-        logger.error(f"Error decoding UI settings file {SETTINGS_FILE}: {e}. Creating with defaults.")
-        with open(SETTINGS_FILE, 'w') as f:
-            json.dump(DEFAULT_SETTINGS, f, indent=2)
-        return DEFAULT_SETTINGS.copy()
-    except Exception as e:
-        logger.error(f"Unexpected error reading UI settings file {SETTINGS_FILE}: {e}. Returning defaults.")
-        return DEFAULT_SETTINGS.copy()
+    if os.path.exists(SETTINGS_FILE):
+        try:
+            with open(SETTINGS_FILE, 'r') as f:
+                loaded_settings = json.load(f)
+            
+            # Merge loaded settings with defaults, ensuring all default keys are present
+            # and potentially overriding defaults with loaded values.
+            # This also helps to add new default settings if the file is old.
+            final_settings = DEFAULT_SETTINGS.copy()
+            final_settings.update(loaded_settings) # Loaded values take precedence for existing keys
+
+            # Remove obsolete keys if necessary (example)
+            # if "google_credentials_configured" in final_settings:
+            #     del final_settings["google_credentials_configured"]
+            
+            return final_settings
+        except json.JSONDecodeError as e:
+            logger.error(f"Error decoding UI settings file {SETTINGS_FILE}: {e}. Returning defaults.")
+            return DEFAULT_SETTINGS.copy() # Return defaults if file is corrupt
+        except Exception as e:
+            logger.error(f"Unexpected error reading UI settings file {SETTINGS_FILE}: {e}. Returning defaults.")
+            return DEFAULT_SETTINGS.copy() # Return defaults on other errors
+    else:
+        logger.info(f"UI settings file not found: {SETTINGS_FILE}. Returning default settings.")
+        return DEFAULT_SETTINGS.copy() # Return defaults if file doesn't exist
 
 def save_ui_settings(settings_data: dict):
     """
